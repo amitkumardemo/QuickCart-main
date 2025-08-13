@@ -67,9 +67,11 @@ export const createUserOrder = inngest.createFunction(
       timeout: '5s'
     }
   },
-  {event: 'order/create'},
+  {event: 'order/created'},
   async ({events}) => {
+    console.log("Received events:", events);  // Added logging to debug
     const orders = events.map((event) => {
+      console.log("Processing event data:", event.data);  // Added logging to debug
       return {
         userId: event.data.userId,
         address: event.data.address,
@@ -80,6 +82,7 @@ export const createUserOrder = inngest.createFunction(
     })
     await connectDB()
     await Order.insertMany(orders)
+    console.log("Orders inserted:", orders);  // Added logging to confirm insertion
 
     return { success: true , processed: orders.length };
   }

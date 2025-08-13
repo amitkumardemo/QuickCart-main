@@ -8,19 +8,32 @@ import Loading from "@/components/Loading";
 
 const Orders = () => {
 
-    const { currency } = useAppContext();
+    const { currency,getToken , user } = useAppContext();
 
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchSellerOrders = async () => {
-        setOrders(orderDummyData);
-        setLoading(false);
+        try {
+            const res = await fetch('/api/order/seller-orders');
+            const data = await res.json();
+            if (data.success) {
+                setOrders(data.orders);
+            } else {
+                setOrders([]);
+            }
+        } catch (error) {
+            setOrders([]);
+        } finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
-        fetchSellerOrders();
-    }, []);
+        if (user) {
+            fetchOrders();
+        }
+    }, [user]);
 
     return (
         <div className="flex-1 h-screen overflow-scroll flex flex-col justify-between text-sm">
